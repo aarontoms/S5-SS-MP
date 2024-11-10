@@ -35,8 +35,8 @@ int main() {
             token = strtok(NULL, "^");  //token 2 times to access the object code
             while(token!=NULL){
                 length = strlen(token)/2;
-                for(int i=0; i<length; i+=2){
-                    fprintf(foutput, "%X\t%c%c\n", addr, token[i], token[i+1]);
+                for(int i=0; i<length; i++){
+                    fprintf(foutput, "%X\t%c%c\n", addr, token[2*i], token[2*i+1]);
                     addr++;
                 }
                 token = strtok(NULL, "^");  //token to get the next object code
