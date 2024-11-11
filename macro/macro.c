@@ -1,57 +1,93 @@
 #include<stdio.h>
+#include<string.h>
 #include<stdlib.h>
 
 void main(){
-    char label[20], opcode[20], operand[20], addr[20], obj[20];
-    char a[20], b[20], c[20], d[20];
-    char namtab[5][20], deftab[5][20];
-    int  ptr=0;
-
-    FILE *finput, *fdeftab, *fnamtab, *ftester, *foutput;
+    char label[10], opcode[20], operand[20], arguments[20], *token;
+    char lab[10], opc[20], oper[20];
+    char namtab[3][20], argtab[10][20];
+    int ptr=0, argPtr=0, opFound=0;
+    FILE *finput, *foutput, *fdeftab, *fnamtab, *fargtab;
 
     finput = fopen("input.txt", "r");
     foutput = fopen("output.txt", "w");
-    while(strcmp(opcode, "END")!=0){
-        fscanf(finput, "%s\t%s\t%s", label, opcode, operand);
+    fnamtab = fopen("namtab.txt", "w");
+    fdeftab = fopen("deftab.txt", "w");
+    fclose(fdeftab);
 
+    while(fscanf(finput, "%s\t%s\t%s", label, opcode, operand)==3){
         if(strcmp(opcode, "MACRO")==0){
-            // namm();
+            argPtr=0;
+            fprintf(fnamtab, "%s\n", label);
             strcpy(namtab[ptr], label);
             ptr++;
-            fnamtab = fopen("namtab.txt", "w");
-            fprintf(fnamtab, "%s", label);
-            fclose(namtab);
-
-            // deff();
-            fdeftab = fopen("deftab.txt", "w");
-            fscanf(finput, "%s\t%s\t%s", label, opcode, operand);
+            strcpy(arguments, operand);
+            token = strtok(arguments, ",");
+            strcpy(argtab[argPtr], token);
+            argPtr++;
+            token = strtok(NULL, ",");
+            while(token!=NULL){
+                strcpy(argtab[argPtr], token);
+                argPtr++;
+                token = strtok(NULL, ",");
+            }
+            
+            fdeftab = fopen("deftab.txt", "a");
+            fprintf(fdeftab, "%s\t%s\t%s\n", label, opcode, operand);
             while(strcmp(opcode, "MEND")!=0){
-                fprintf(fdeftab, "%s\t%s\t%s\n", label, opcode, operand);
                 fscanf(finput, "%s\t%s\t%s", label, opcode, operand);
+                int i;
+                for(i=0; i<argPtr; i++){
+                    if(strcmp(argtab[i], operand)==0){
+                        fprintf(fdeftab, "%s\t%s\t?%d\n", label, opcode, i+1);
+                        break;
+                    }
+                }
+                if(i==argPtr){
+                    fprintf(fdeftab, "%s\t%s\t%s\n", label, opcode, operand);
+                }
             }
+            fscanf(finput, "%s\t%s\t%s", label, opcode, operand);
             fclose(fdeftab);
-
-            continue;
         }
-        if(strcmp(opcode, "MAC")==0){
-            printf("keri");
-            ftester = fopen("input.txt", "r");
-            while(strcmp(a, opcode)!=0){
-                fscanf(ftester, "%s\t%s\t%s", a, b, c);
-            }
-            fscanf(ftester, "%s\t%s\t%s", a, b, c);
-            while(strcmp(b, "MEND")!=0){
-                fprintf(foutput, "%s\t%s\t%s\n", a, b, c);
-                fscanf(ftester, "%s\t%s\t%s", a, b, c);
-            }
-            continue;
-        }
+        
+        int i;
+        for(i=0; i<ptr; i++){
+            if(strcmp(opcode, namtab[i])==0){
+                argPtr=0;
+                fargtab = fopen("argtab.txt", "w");
+                token = strtok(operand,  ",");
+                fprintf(fargtab, "%s\n", token);
+                strcpy(argtab[argPtr], token);
+                argPtr++;
+                token = strtok(NULL,  ",");
+                while(token!=NULL){
+                    fprintf(fargtab, "%s\n", token);
+                    strcpy(argtab[argPtr], token);
+                    argPtr++;
+                    token = strtok(NULL, ",");
+                }
+                fclose(fargtab);
 
-        fprintf(foutput, "%s\t%s\t%s\n", label, opcode, operand);
+                fdeftab = fopen("deftab.txt", "r");
+                while(fscanf(fdeftab, "%s\t%s\t%s", lab, opc, oper)==3){
+                    if(oper[0]=='?'){
+                        oper[0] = oper[1];
+                        oper[1] = 0;
+                        printf("%s\n", argtab[atoi(oper)-1]);
+                        fprintf(foutput, "%s\t%s\t%s\n", lab, opc, argtab[atoi(oper)-1]);
+                    }
+                }
+                break;
+            }
+
+        }
+        if(i==ptr){
+            fprintf(foutput, "%s\t%s\t%s\n", label, opcode, operand);
+        }
+        
     }
 
-    for(int i=0; i<ptr; i++){
-        printf("MACRO: %s, ", namtab[i]);
-        printf("DEFINITION: %s\n", deftab[i]);
-    }
+    fclose(finput);
+    fclose(foutput);
 }

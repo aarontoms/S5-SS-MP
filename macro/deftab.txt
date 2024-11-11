@@ -1,2 +1,4 @@
--	LDA	#12
--	ADD	#30
+ADDER	MACRO	&A,&B
+-	LDA	?1
+-	STA	?2
+-	MEND	-
