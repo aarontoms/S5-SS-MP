@@ -47,8 +47,8 @@ void main(){
                     fprintf(fdeftab, "%s\t%s\t%s\n", label, opcode, operand);
                 }
             }
-            fscanf(finput, "%s\t%s\t%s", label, opcode, operand);
             fclose(fdeftab);
+            fscanf(finput, "%s\t%s\t%s", label, opcode, operand);
         }
         
         int i;
@@ -60,7 +60,7 @@ void main(){
                 fprintf(fargtab, "%s\n", token);
                 strcpy(argtab[argPtr], token);
                 argPtr++;
-                token = strtok(NULL,  ",");
+                token = strtok(NULL, ",");
                 while(token!=NULL){
                     fprintf(fargtab, "%s\n", token);
                     strcpy(argtab[argPtr], token);
@@ -76,6 +76,9 @@ void main(){
                         oper[1] = 0;
                         printf("%s\n", argtab[atoi(oper)-1]);
                         fprintf(foutput, "%s\t%s\t%s\n", lab, opc, argtab[atoi(oper)-1]);
+                    }
+                    else if(strcmp(opc, "MACRO")!=0 && strcmp(opc, "MEND")!=0){
+                        fprintf(foutput, "%s\t%s\t%s\n", lab, opc, oper);
                     }
                 }
                 break;

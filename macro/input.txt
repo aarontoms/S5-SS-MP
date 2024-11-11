@@ -1,6 +1,7 @@
 ADDER MACRO &A,&B
 -   LDA &A
 -   STA &B
+-   LDA 10
 -   MEND    -
 SAMPLE  START   1000
 -   ADDER N1,N2

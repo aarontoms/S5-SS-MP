@@ -1,4 +1,5 @@
 ADDER	MACRO	&A,&B
 -	LDA	?1
 -	STA	?2
+-	LDA	10
 -	MEND	-
